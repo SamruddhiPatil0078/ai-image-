@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Face Detection</title>
+    <title>AI Image Cloaking</title>
 </head>
 <body>
 
 <h2>Upload Image</h2>
 
-<form id="uploadForm">
-    <input type="file" name="image" accept="image/*" required>
-    <button type="submit">Upload</button>
-</form>
+<input type="file" id="fileInput">
+<button onclick="uploadImage()">Upload</button>
 
-<h3>Detected Faces:</h3>
-<pre id="result"></pre>
+<h3>Result:</h3>
+<div id="results"></div>
 
 <script>
-document.getElementById("uploadForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+async function uploadImage() {
 
-    const formData = new FormData(this);
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) {
+        alert("Select image first");
+        return;
+    }
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "<h3>Processing... Please wait ⏳</h3>";
+
+    const formData = new FormData();
+    formData.append("image", file);
 
     const response = await fetch("/upload", {
         method: "POST",
@@ -28,9 +35,23 @@ document.getElementById("uploadForm").addEventListener("submit", async function(
 
     const data = await response.json();
 
-    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-});
+    resultsDiv.innerHTML = "";
+
+    if (data.length === 0) {
+        resultsDiv.innerHTML = "No face detected";
+        return;
+    }
+
+    data.forEach(face => {
+        const img = document.createElement("img");
+        img.src = "/" + face.protected_image + "?t=" + new Date().getTime();
+        img.width = 250;
+        resultsDiv.appendChild(img);
+        resultsDiv.appendChild(document.createElement("br"));
+    });
+}
 </script>
+
 
 </body>
 </html>
