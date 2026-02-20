@@ -1,0 +1,13 @@
+flask
+numpy
+opencv-python
+
+# MediaPipe (stable version supporting mp.solutions)
+
+mediapipe==0.10.14
+
+# PyTorch + FaceNet
+
+torch
+torchvision
+facenet-pytorch
